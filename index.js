@@ -6,7 +6,12 @@ const app = new express();
 app.use(express.json());
 
 app.get('/notes', (req, res) => {
-    res.send('Retrieving all notes')
+    Note.find()
+        .then((list) => res.send(list))
+        .catch((err) => {
+            res.send('sorry, something went wrong');
+            console.log(`something went wrong while fetching notes\n${err}`)
+        })
 })
 
 app.post('/notes', (req, res) => {
