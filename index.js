@@ -6,12 +6,14 @@ const app = new express();
 app.use(express.json());
 
 app.get('/notes', (req, res) => {
-    const { content, title, ...rest } = req.query;
+    const { content, title, page = 1, size = 10 } = req.query;
     const query = {};
     if (content) { query.content = content }
     if (title) { query.title = title }
 
     Note.find(query)
+        .skip((page - 1) * size)
+        .limit(size)
         .then((list) => res.status(200).send(list))
         .catch((err) => {
             res.status(500).send('internal server error');
@@ -23,7 +25,6 @@ app.post('/notes', async (req, res) => {
     const { id, title, content, date } = req.body;
     const found = await Note.find({ id });
     if (found.length) {
-        console.log(found);
         res.status(400).send('id already exists');
         return;
     }
@@ -41,7 +42,6 @@ app.delete('/notes/:id', (req, res) => {
     const id = req.params.id;
     Note.findOneAndDelete({ id: id })
         .then(deleted => {
-            console.log(`deleted: ${deleted}`);
             if (deleted) {
                 res.status(200).end();
             } else {
