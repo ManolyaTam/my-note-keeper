@@ -5,6 +5,7 @@ const app = new express();
 
 app.use(express.json());
 
+// get all notes, filtered and paginated
 app.get('/notes', (req, res) => {
     const { content, title, page = 1, size = 10 } = req.query;
     const query = {};
@@ -21,6 +22,7 @@ app.get('/notes', (req, res) => {
         })
 })
 
+// create a new note
 app.post('/notes', async (req, res) => {
     const { id, title, content, date } = req.body;
     const found = await Note.find({ id });
@@ -38,6 +40,7 @@ app.post('/notes', async (req, res) => {
         });
 })
 
+// delete a note by its id
 app.delete('/notes/:id', (req, res) => {
     const id = req.params.id;
     Note.findOneAndDelete({ id: id })
@@ -54,6 +57,7 @@ app.delete('/notes/:id', (req, res) => {
         })
 })
 
+// update a note attributes (by id)
 app.put('/notes/:id', async (req, res) => {
     const filterId = req.params.id;
     const { _id, id, ...updateObj } = req.body;
@@ -77,6 +81,9 @@ app.listen(3001, () => {
     dbConnect();
 })
 
+/**
+ * connects the server to MongoDB
+ */
 const dbConnect = () => {
     mongoose.connect('mongodb://127.0.0.1/my-note-keeper')
         .then(() => console.log('Connceted to MongoDB'))
