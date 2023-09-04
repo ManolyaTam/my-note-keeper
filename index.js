@@ -6,7 +6,8 @@ const app = new express();
 app.use(express.json());
 
 app.get('/notes', (req, res) => {
-    Note.find()
+    const query = req.query;
+    Note.find(query)
         .then((list) => res.status(200).send(list))
         .catch((err) => {
             res.status(500).send('internal server error');
