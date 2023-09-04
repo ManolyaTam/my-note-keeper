@@ -14,9 +14,16 @@ app.get('/notes', (req, res) => {
         })
 })
 
-app.post('/notes', (req, res) => {
-    const { title, content, _date } = req.body;
-    const newNote = new Note({ title, content, _date })
+app.post('/notes', async (req, res) => {
+    const { id, title, content, date } = req.body;
+    const found = await Note.find({ id: id });
+    if (found.length) {
+        console.log(found);
+        res.status(400).send('id already exists');
+        return;
+    }
+
+    const newNote = new Note({ id, title, content, date })
     newNote.save()
         .then(() => res.send('new note successfully added'))
         .catch((err) => {
@@ -26,12 +33,20 @@ app.post('/notes', (req, res) => {
 })
 
 app.delete('/notes/:id', (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
+    Note.findOneAndDelete({ id })
+        .then(deleted => {
+            if (deleted) {
+                res.status()
+            } else {
+                res.status('')
+            }
+        })
     res.send(`deleting note #${id}`)
 })
 
 app.put('/notes/:id', (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
     res.send(`updating note #${id}`)
 })
 

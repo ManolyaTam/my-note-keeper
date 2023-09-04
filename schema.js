@@ -1,9 +1,10 @@
 const { model, Schema } = require('mongoose');
 
 const NoteSchema = new Schema({
-    title: String,
-    content: String,
-    _date: String
+    id: { type: Number, unique: true },
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    date: Date,
 })
 
 const Note = model('notes', NoteSchema, 'noteCollection');
