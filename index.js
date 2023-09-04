@@ -6,7 +6,11 @@ const app = new express();
 app.use(express.json());
 
 app.get('/notes', (req, res) => {
-    const query = req.query;
+    const { content, title, ...rest } = req.query;
+    const query = {};
+    if (content) { query.content = content }
+    if (title) { query.title = title }
+
     Note.find(query)
         .then((list) => res.status(200).send(list))
         .catch((err) => {
