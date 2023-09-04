@@ -34,7 +34,7 @@ app.post('/notes', async (req, res) => {
 
 app.delete('/notes/:id', (req, res) => {
     const id = req.params.id;
-    Note.findOneAndDelete({ id })
+    Note.findOneAndDelete({ id: id })
         .then(deleted => {
             console.log(`deleted: ${deleted}`);
             if (deleted) {
@@ -49,9 +49,22 @@ app.delete('/notes/:id', (req, res) => {
         })
 })
 
-app.put('/notes/:id', (req, res) => {
-    const id = req.params.id;
-    res.send(`updating note #${id}`)
+app.put('/notes/:id', async (req, res) => {
+    const filterId = req.params.id;
+    const { _id, id, ...updateObj } = req.body;
+    Note.findOneAndUpdate({ id: filterId }, updateObj)
+        .then((found) => {
+            if (!found) {
+                res.status(404).send('note does not exist')
+            }
+            else {
+                res.status(200).send('note successfully updated')
+            }
+        })
+        .catch((err => {
+            console.log(`something went wrong while updating a note\n${err}`)
+            res.status(500).send('internal server error');
+        }))
 })
 
 app.listen(3001, () => {
