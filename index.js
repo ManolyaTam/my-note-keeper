@@ -7,9 +7,9 @@ app.use(express.json());
 
 app.get('/notes', (req, res) => {
     Note.find()
-        .then((list) => res.send(list))
+        .then((list) => res.status(200).send(list))
         .catch((err) => {
-            res.send('sorry, something went wrong');
+            res.status(500).send('sorry, something went wrong');
             console.log(`something went wrong while fetching notes\n${err}`)
         })
 })
@@ -25,9 +25,9 @@ app.post('/notes', async (req, res) => {
 
     const newNote = new Note({ id, title, content, date })
     newNote.save()
-        .then(() => res.send('new note successfully added'))
+        .then(() => res.status(201).send('new note successfully added'))
         .catch((err) => {
-            res.send('sorry, something went wrong');
+            res.status(500).send('sorry, something went wrong');
             console.log(`something went wrong while creating a note\n${err}`)
         });
 })
