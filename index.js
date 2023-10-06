@@ -43,7 +43,7 @@ app.post('/notes', async (req, res) => {
 // delete a note by its id
 app.delete('/notes/:id', (req, res) => {
     const id = req.params.id;
-    Note.findOneAndDelete({ id: id })
+    Note.findOneAndDelete({ _id: id })
         .then(deleted => {
             if (deleted) {
                 res.status(200).end();
