@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
 const express = require('express');
+const cors = require('cors');
+
 const { Note } = require('./schema');
+
 const app = new express();
 
+app.use(cors());
 app.use(express.json());
 
 // get all notes, filtered and paginated
@@ -24,14 +28,10 @@ app.get('/notes', (req, res) => {
 
 // create a new note
 app.post('/notes', async (req, res) => {
-    const { id, title, content, date } = req.body;
-    const found = await Note.find({ id });
-    if (found.length) {
-        res.status(400).send('id already exists');
-        return;
-    }
+    console.log(req.body)
+    const { title, content, date } = req.body;
 
-    const newNote = new Note({ id, title, content, date })
+    const newNote = new Note({ title, content, date })
     newNote.save()
         .then(() => res.status(201).send('new note successfully added'))
         .catch((err) => {
