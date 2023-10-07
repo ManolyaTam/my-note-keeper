@@ -11,10 +11,13 @@ app.use(express.json());
 
 // get all notes, filtered and paginated
 app.get('/notes', (req, res) => {
-    const { content, title, page = 1, size = 10 } = req.query;
-    const query = {};
-    if (content) { query.content = content }
-    if (title) { query.title = title }
+    const { term = '', page = 1, size = 10 } = req.query;
+    const query = {
+        $or: [
+            { content: { $regex: term, $options: 'i' } },
+            { title: { $regex: term, $options: 'i' } },
+        ],
+    };
 
     Note.find(query)
         .skip((page - 1) * size)
@@ -22,8 +25,8 @@ app.get('/notes', (req, res) => {
         .then((list) => res.status(200).send(list))
         .catch((err) => {
             res.status(500).send('internal server error');
-            console.log(`something went wrong while fetching notes\n${err}`)
-        })
+            console.log(`something went wrong while fetching notes\n${err}`);
+        });
 })
 
 // create a new note
@@ -60,8 +63,8 @@ app.delete('/notes/:id', (req, res) => {
 // update a note attributes (by id)
 app.put('/notes/:id', async (req, res) => {
     const filterId = req.params.id;
-    const { _id, id, ...updateObj } = req.body;
-    Note.findOneAndUpdate({ id: filterId }, updateObj)
+    const { id, ...updateObj } = req.body;
+    Note.findOneAndUpdate({ _id: filterId }, updateObj)
         .then((found) => {
             if (!found) {
                 res.status(404).send('note does not exist')
