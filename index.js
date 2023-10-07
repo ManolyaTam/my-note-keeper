@@ -32,9 +32,9 @@ app.get('/notes', (req, res) => {
 // create a new note
 app.post('/notes', async (req, res) => {
     console.log(req.body)
-    const { title, content, date } = req.body;
+    const { title, content, date, color } = req.body;
 
-    const newNote = new Note({ title, content, date })
+    const newNote = new Note({ title, content, date, color })
     newNote.save()
         .then(() => res.status(201).send('new note successfully added'))
         .catch((err) => {
